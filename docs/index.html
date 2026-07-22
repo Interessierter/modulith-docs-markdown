@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>modulith-docs-markdown — Docusaurus + Mermaid docs for Spring Modulith</title>
+<meta name="description" content="Renders a Spring Modulith application as Docusaurus-flavoured Markdown with Mermaid diagrams, verified fact-for-fact against Spring Modulith's own Documenter by a semantic parity test.">
+<link rel="canonical" href="https://selman.li/modulith-docs-markdown/">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23375ede'/%3E%3Cpath d='M8 22V10h4l4 5 4-5h4v12h-4v-6l-4 5-4-5v6z' fill='%23fff'/%3E%3C/svg%3E">
+<style>
+  :root {
+    --bg: #f6f7fb;
+    --surface: #ffffff;
+    --ink: #1a1f2c;
+    --ink-soft: #565f78;
+    --line: #dde1ee;
+    --accent: #375ede;
+    --accent-ink: #ffffff;
+    --code-bg: #eef1fa;
+    --code-ink: #1c2333;
+    --shadow: 0 1px 2px rgba(26, 31, 44, 0.06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0f1220;
+      --surface: #161a2c;
+      --ink: #e8eaf6;
+      --ink-soft: #a3aac6;
+      --line: #2a3050;
+      --accent: #7c96ff;
+      --accent-ink: #0b0f22;
+      --code-bg: #10142a;
+      --code-ink: #dbe0f8;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: var(--accent); }
+
+  header.hero {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 4.5rem 1.5rem 2.5rem;
+    text-align: center;
+  }
+
+  .mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 10px;
+    background: var(--accent);
+    color: var(--accent-ink);
+    margin-bottom: 1.25rem;
+  }
+
+  header.hero h1 {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: clamp(1.6rem, 4.6vw, 2.4rem);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin: 0 0 0.75rem;
+    text-wrap: balance;
+  }
+
+  header.hero p.tagline {
+    color: var(--ink-soft);
+    max-width: 50ch;
+    margin: 0 auto;
+    font-size: 1.05rem;
+  }
+
+  .badges {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.4rem;
+    margin: 1.5rem 0 0;
+  }
+  .badges img { height: 20px; display: block; }
+
+  main {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 0 1.5rem 5rem;
+  }
+
+  section { margin: 3rem 0; }
+
+  h2 {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin: 0 0 0.9rem;
+  }
+
+  p { max-width: 68ch; }
+
+  pre {
+    background: var(--code-bg);
+    color: var(--code-ink);
+    padding: 1rem 1.1rem;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-size: 0.84rem;
+    line-height: 1.55;
+    border: 1px solid var(--line);
+  }
+  code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  p code { background: var(--code-bg); padding: 0.1em 0.35em; border-radius: 3px; font-size: 0.88em; }
+
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 1rem;
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 1.1rem 1.25rem;
+    box-shadow: var(--shadow);
+  }
+  .card h3 {
+    font-size: 0.95rem;
+    margin: 0 0 0.4rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  .card p { margin: 0; font-size: 0.92rem; color: var(--ink-soft); }
+
+  .mermaid-mock {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.85rem;
+  }
+  .mermaid-mock .node {
+    border: 1.5px solid var(--accent);
+    border-radius: 8px;
+    padding: 0.5rem 0.9rem;
+    color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 8%, transparent);
+  }
+  .mermaid-mock .arrow {
+    color: var(--ink-soft);
+  }
+
+  footer {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+    border-top: 1px solid var(--line);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    color: var(--ink-soft);
+    font-size: 0.9rem;
+  }
+  footer a { color: var(--ink-soft); }
+  footer a:hover { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="mark" aria-hidden="true">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M4 18V6h3l3 4 3-4h3v12h-3v-6l-3 4-3-4v6z" stroke="currentColor" stroke-width="0" fill="currentColor"/></svg>
+  </div>
+  <h1>modulith-docs-markdown</h1>
+  <p class="tagline">
+    Turn a Spring Modulith app into Docusaurus Markdown + Mermaid diagrams —
+    checked fact-for-fact against Spring Modulith's own <code>Documenter</code>, on every build.
+  </p>
+  <div class="badges">
+    <a href="https://github.com/haisi/modulith-docs-markdown/actions/workflows/ci.yml"><img src="https://github.com/haisi/modulith-docs-markdown/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI status"></a>
+    <a href="https://central.sonatype.com/artifact/li.selman/modulith-docs-markdown"><img src="https://img.shields.io/maven-central/v/li.selman/modulith-docs-markdown.svg" alt="Maven Central version"></a>
+    <a href="https://javadoc.io/doc/li.selman/modulith-docs-markdown"><img src="https://javadoc.io/badge2/li.selman/modulith-docs-markdown/javadoc.svg" alt="Javadoc"></a>
+    <a href="https://coveralls.io/github/haisi/modulith-docs-markdown?branch=main"><img src="https://coveralls.io/repos/github/haisi/modulith-docs-markdown/badge.svg?branch=main" alt="Coverage Status"></a>
+    <a href="https://github.com/haisi/modulith-docs-markdown/blob/main/LICENSE"><img src="https://img.shields.io/github/license/haisi/modulith-docs-markdown" alt="License"></a>
+  </div>
+</header>
+
+<main>
+  <section>
+    <h2>The problem</h2>
+    <p>
+      Spring Modulith's built-in <code>Documenter</code> is excellent — and it only speaks AsciiDoc and PlantUML.
+      Docusaurus speaks Markdown and Mermaid. Hand-converting the output (or worse, hand-writing a parallel set of
+      docs) drifts from the real module structure the moment anyone adds a bean, an event, or a dependency.
+    </p>
+  </section>
+
+  <section>
+    <h2>What it does</h2>
+    <div class="cards">
+      <div class="card">
+        <h3>Same facts</h3>
+        <p>Every module's beans, events, aggregates, value types and config properties — the same set Spring Modulith itself documents, read straight from the public model.</p>
+      </div>
+      <div class="card">
+        <h3>Same diagrams</h3>
+        <p>Diagrams come from the identical Structurizr workspace <code>Documenter</code> builds, exported to Mermaid directly — never a lossy PlantUML-to-Mermaid text conversion.</p>
+      </div>
+      <div class="card">
+        <h3>Provably in sync</h3>
+        <p>A semantic parity test runs both tools over the same <code>ApplicationModules</code> instance and fails the build the moment they disagree on a fact or a diagram edge.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Rendered output</h2>
+    <div class="mermaid-mock">
+      <span class="node">Order</span>
+      <span class="arrow">──uses──▶</span>
+      <span class="node">Inventory</span>
+    </div>
+  </section>
+
+  <section>
+    <h2>Usage</h2>
+    <p>Add the dependency (see <a href="https://github.com/haisi/modulith-docs-markdown/releases">latest release</a> for the version):</p>
+    <pre><code>&lt;dependency&gt;
+    &lt;groupId&gt;li.selman&lt;/groupId&gt;
+    &lt;artifactId&gt;modulith-docs-markdown&lt;/artifactId&gt;
+    &lt;version&gt;VERSION&lt;/version&gt;
+&lt;/dependency&gt;</code></pre>
+    <p>Then render your modules into your Docusaurus <code>docs/</code> tree:</p>
+    <pre><code>var modules = ApplicationModules.of(MyApplication.class).verify();
+
+new ModulithDocusaurusRenderer(modules)
+        .writeTo(Path.of("docs/modules"));</code></pre>
+    <p>Full walkthrough, including the Docusaurus <code>securityLevel</code> note and the table-vs-sections
+      switch, is in the <a href="https://github.com/haisi/modulith-docs-markdown#readme">README</a>.</p>
+  </section>
+</main>
+
+<footer>
+  <a href="https://github.com/haisi/modulith-docs-markdown">GitHub</a>
+  <a href="https://central.sonatype.com/artifact/li.selman/modulith-docs-markdown">Maven Central</a>
+  <a href="https://javadoc.io/doc/li.selman/modulith-docs-markdown">Javadoc</a>
+  <a href="tests/">Test report</a>
+  <a href="coverage/">Test coverage</a>
+  <a href="https://github.com/haisi/modulith-docs-markdown/blob/main/LICENSE">Apache-2.0</a>
+  <a href="https://github.com/haisi/modulith-docs-markdown/issues">Issues</a>
+</footer>
+
+</body>
+</html>

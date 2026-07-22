@@ -1,5 +1,11 @@
 # modulith-docs-markdown
 
+[![CI](https://github.com/haisi/modulith-docs-markdown/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/haisi/modulith-docs-markdown/actions/workflows/ci.yml)
+[![Coverage Status](https://coveralls.io/repos/github/haisi/modulith-docs-markdown/badge.svg?branch=main)](https://coveralls.io/github/haisi/modulith-docs-markdown?branch=main)
+[![Maven Central](https://img.shields.io/maven-central/v/li.selman/modulith-docs-markdown.svg)](https://central.sonatype.com/artifact/li.selman/modulith-docs-markdown)
+[![Javadoc](https://javadoc.io/badge2/li.selman/modulith-docs-markdown/javadoc.svg)](https://javadoc.io/doc/li.selman/modulith-docs-markdown)
+[![License](https://img.shields.io/github/license/haisi/modulith-docs-markdown)](LICENSE)
+
 Documents a [Spring Modulith](https://spring.io/projects/spring-modulith) application as
 Docusaurus-flavoured Markdown with [Mermaid](https://mermaid.js.org/) diagrams, carrying the same semantic
 information as Spring Modulith's built-in `Documenter` (which emits AsciiDoc + PlantUML).
@@ -8,7 +14,21 @@ The output format differs — Markdown vs AsciiDoc, Mermaid vs PlantUML — but 
 **diagram topology** are asserted to be identical by `SemanticParityTest`, which runs both tools over the
 same `ApplicationModules` instance. See [How parity is verified](#how-parity-is-verified).
 
+[**Website**](https://selman.li/modulith-docs-markdown/)
+
 ## Usage
+
+Add the dependency:
+
+```xml
+<dependency>
+    <groupId>li.selman</groupId>
+    <artifactId>modulith-docs-markdown</artifactId>
+    <version>VERSION</version>
+</dependency>
+```
+
+Then render your modules into your Docusaurus `docs/` tree:
 
 ```java
 var modules = ApplicationModules.of(MyApplication.class).verify();
@@ -151,3 +171,37 @@ Test scope only: `spring-modulith-docs` (the parity oracle) and the sample fixtu
 (`spring-modulith-events-api`, `spring-boot-autoconfigure`, `spring-data-commons`, `jmolecules-ddd`,
 `jmolecules-events`, `spring-boot-configuration-processor`). `spring-modulith-docs` never appears in
 `src/main`.
+
+## Building
+
+```shell
+./mvnw verify
+```
+
+Test coverage is enforced at 100% (line and branch) for `src/main` via JaCoCo; `**/sample/**` (the ArchUnit
+test fixture, verified structurally rather than line-by-line) is excluded from the rule. `verify` fails if
+coverage drops below that. Run `open target/site/jacoco/index.html` after a build to see the report.
+
+`verify` also runs Spotless (palantir-java-format + sorted `pom.xml`), Checkstyle, and Error Prone/NullAway via
+the compiler plugin. Run `./mvnw spotless:apply` to auto-format before committing.
+
+## Releasing
+
+Releases are published to Maven Central via [JReleaser](https://jreleaser.org). Pushing a tag matching `v*`
+(e.g. `v1.0.0`) triggers `.github/workflows/release.yml`, which stages the build artifacts and hands them to
+JReleaser to sign and deploy to the [Central Portal](https://central.sonatype.com).
+
+```shell
+./bumpPomVersion.sh
+git push
+./release.sh
+```
+
+## Contributing
+
+Bug reports, feature requests and pull requests are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md). This
+project follows a [Code of Conduct](CODE_OF_CONDUCT.md); by participating you agree to abide by it.
+
+## License
+
+`modulith-docs-markdown` is licensed under the [Apache License, Version 2.0](LICENSE).
