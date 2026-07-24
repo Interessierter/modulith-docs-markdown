@@ -39,6 +39,7 @@
 
   body {
     margin: 0;
+    overflow-x: hidden;
     background: var(--bg);
     color: var(--ink);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
@@ -144,30 +145,72 @@
   }
   .card p { margin: 0; font-size: 0.92rem; color: var(--ink-soft); }
 
-  .mermaid-mock {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.75rem;
-    flex-wrap: wrap;
+  .demo-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.1rem;
+    align-items: start;
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    margin-left: -50vw;
+    box-sizing: border-box;
+    padding: 0 max(1.5rem, calc(50vw - 570px));
+  }
+  @media (max-width: 900px) {
+    .demo-grid { grid-template-columns: 1fr; }
+  }
+
+  .demo-pane {
     background: var(--surface);
     border: 1px solid var(--line);
     border-radius: 10px;
-    padding: 1.5rem;
     box-shadow: var(--shadow);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .pane-label {
     font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-    font-size: 0.85rem;
-  }
-  .mermaid-mock .node {
-    border: 1.5px solid var(--accent);
-    border-radius: 8px;
-    padding: 0.5rem 0.9rem;
-    color: var(--accent);
-    background: color-mix(in srgb, var(--accent) 8%, transparent);
-  }
-  .mermaid-mock .arrow {
+    font-size: 0.75rem;
     color: var(--ink-soft);
+    background: var(--code-bg);
+    border-bottom: 1px solid var(--line);
+    padding: 0.5rem 0.9rem;
   }
+  .demo-pane pre {
+    margin: 0;
+    border: none;
+    border-radius: 0;
+    max-height: 560px;
+    overflow: auto;
+    font-size: 0.76rem;
+  }
+
+  .rendered-doc {
+    padding: 1.1rem 1.3rem 1.4rem;
+    max-height: 560px;
+    overflow: auto;
+  }
+  .rendered-doc h1 {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 1.3rem;
+    margin: 0 0 0.9rem;
+  }
+  .rendered-doc h2 {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.88rem;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 0.3rem;
+    margin: 1.3rem 0 0.5rem;
+  }
+  .rendered-doc h2:first-of-type { margin-top: 1.1rem; }
+  .rendered-doc p { font-size: 0.9rem; color: var(--ink-soft); margin: 0.3rem 0; max-width: none; }
+  .rendered-doc ul { margin: 0.2rem 0 0; padding-left: 1.3rem; font-size: 0.9rem; }
+  .rendered-doc li { margin: 0.15rem 0; }
+  .rendered-doc code { background: var(--code-bg); padding: 0.1em 0.35em; border-radius: 3px; font-size: 0.85em; }
+  .rendered-doc .mermaid { display: flex; justify-content: center; margin: 0.5rem 0 1.2rem; }
+  .rendered-doc .mermaid svg { max-width: 100%; height: auto; }
 
   footer {
     max-width: 780px;
@@ -233,11 +276,144 @@
   </section>
 
   <section>
-    <h2>Rendered output</h2>
-    <div class="mermaid-mock">
-      <span class="node">Order</span>
-      <span class="arrow">──uses──▶</span>
-      <span class="node">Inventory</span>
+    <h2>Generated Markdown &rarr; rendered docs</h2>
+    <p>
+      No mockup here: this is the real output of <code>ModulithDocusaurusRenderer</code> run over the
+      two-module sample fixture the semantic parity test uses. The file on the left is what lands in your
+      <code>docs/</code> tree; the right is that same file rendered live, Mermaid diagram included.
+    </p>
+    <div class="demo-grid">
+      <div class="demo-pane">
+        <div class="pane-label">docs/modules/order.md</div>
+        <pre><code>---
+id: order
+title: Order
+sidebar_label: Order
+sidebar_position: 2
+---
+# Order
+
+```mermaid
+graph TB
+  linkStyle default fill:#ffffff
+
+  subgraph diagram ["Order"]
+    style diagram fill:#ffffff,stroke:#ffffff
+
+    subgraph 1 ["SampleApplication"]
+      style 1 fill:#ffffff,stroke:#444444,color:#444444
+
+      subgraph 2 ["SampleApplication"]
+        style 2 fill:#ffffff,stroke:#444444,color:#444444
+
+        3["&lt;div style='font-weight: bold'&gt;Inventory&lt;/div&gt;&lt;div style='font-size: 70%; margin-top: 0px'&gt;[Component: Module]&lt;/div&gt;"]
+        style 3 fill:#ffffff,stroke:#444444,color:#444444
+        4["&lt;div style='font-weight: bold'&gt;Order&lt;/div&gt;&lt;div style='font-size: 70%; margin-top: 0px'&gt;[Component: Module]&lt;/div&gt;"]
+        style 4 fill:#ffffff,stroke:#444444,color:#444444
+      end
+
+    end
+
+    4-. "&lt;div&gt;uses&lt;/div&gt;&lt;div style='font-size: 70%'&gt;&lt;/div&gt;" .-&gt;3
+
+  end
+```
+
+## Description
+
+Handles order placement and the lifecycle of an order, from creation to fulfillment.
+
+## Base package
+
+`li.selman.modulithdocsmarkdown.sample.order`
+
+## Spring components
+
+- `OrderProperties`
+- `OrderRepository`
+- `OrderService`
+
+## Bean references
+
+- `InventoryLookup` (in [Inventory](./inventory))
+
+## Aggregate roots
+
+- `Order`
+
+## Value types
+
+- `OrderId`
+
+## Published events
+
+- `OrderPlaced`
+
+## Events listened to
+
+- `StockLevelChanged`
+
+## Configuration properties
+
+- `app.order.max-items-per-order` -- `java.lang.Integer`, default `10`. Maximum number of items allowed on a single order.
+</code></pre>
+      </div>
+      <div class="demo-pane">
+        <div class="pane-label">Rendered in Docusaurus</div>
+        <div class="rendered-doc">
+          <h1>Order</h1>
+          <pre class="mermaid">graph TB
+  linkStyle default fill:#ffffff
+
+  subgraph diagram ["Order"]
+    style diagram fill:#ffffff,stroke:#ffffff
+
+    subgraph 1 ["SampleApplication"]
+      style 1 fill:#ffffff,stroke:#444444,color:#444444
+
+      subgraph 2 ["SampleApplication"]
+        style 2 fill:#ffffff,stroke:#444444,color:#444444
+
+        3["&lt;div style='font-weight: bold'&gt;Inventory&lt;/div&gt;&lt;div style='font-size: 70%; margin-top: 0px'&gt;[Component: Module]&lt;/div&gt;"]
+        style 3 fill:#ffffff,stroke:#444444,color:#444444
+        4["&lt;div style='font-weight: bold'&gt;Order&lt;/div&gt;&lt;div style='font-size: 70%; margin-top: 0px'&gt;[Component: Module]&lt;/div&gt;"]
+        style 4 fill:#ffffff,stroke:#444444,color:#444444
+      end
+
+    end
+
+    4-. "&lt;div&gt;uses&lt;/div&gt;&lt;div style='font-size: 70%'&gt;&lt;/div&gt;" .-&gt;3
+
+  end</pre>
+          <h2>Description</h2>
+          <p>Handles order placement and the lifecycle of an order, from creation to fulfillment.</p>
+          <h2>Base package</h2>
+          <p><code>li.selman.modulithdocsmarkdown.sample.order</code></p>
+          <h2>Spring components</h2>
+          <ul>
+            <li><code>OrderProperties</code></li>
+            <li><code>OrderRepository</code></li>
+            <li><code>OrderService</code></li>
+          </ul>
+          <h2>Bean references</h2>
+          <ul>
+            <li><code>InventoryLookup</code> (in <em>Inventory</em>)</li>
+          </ul>
+          <h2>Aggregate roots</h2>
+          <ul><li><code>Order</code></li></ul>
+          <h2>Value types</h2>
+          <ul><li><code>OrderId</code></li></ul>
+          <h2>Published events</h2>
+          <ul><li><code>OrderPlaced</code></li></ul>
+          <h2>Events listened to</h2>
+          <ul><li><code>StockLevelChanged</code></li></ul>
+          <h2>Configuration properties</h2>
+          <ul>
+            <li><code>app.order.max-items-per-order</code> -- <code>java.lang.Integer</code>, default
+              <code>10</code>. Maximum number of items allowed on a single order.</li>
+          </ul>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -268,6 +444,16 @@ new ModulithDocusaurusRenderer(modules)
   <a href="https://github.com/haisi/modulith-docs-markdown/blob/main/LICENSE">Apache-2.0</a>
   <a href="https://github.com/haisi/modulith-docs-markdown/issues">Issues</a>
 </footer>
+
+<script type="module">
+  import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+  const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  mermaid.initialize({
+    startOnLoad: true,
+    securityLevel: "loose",
+    theme: dark ? "dark" : "neutral",
+  });
+</script>
 
 </body>
 </html>
