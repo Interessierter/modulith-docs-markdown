@@ -17,9 +17,12 @@ class ModulithDocusaurusRendererTest {
     void defaultCanvasStyleRendersHeadedSections() {
 
         var order = modules.getModuleByName("order").orElseThrow();
-        var page = new ModulithDocusaurusRenderer(modules).renderModulePage(order, 1);
+        ModulithDocusaurusRenderer renderer = new ModulithDocusaurusRenderer(modules);
+        var page = renderer.renderModulePage(order, 1);
+        var indexPage = renderer.renderIndexPage();
 
         assertThat(page).contains("## Spring components").doesNotContain("<table>");
+        assertThat(indexPage).contains("./" + renderer.generateModuleFileName(order));
     }
 
     @Test

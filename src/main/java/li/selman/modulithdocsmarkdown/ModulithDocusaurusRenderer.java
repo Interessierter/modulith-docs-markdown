@@ -75,6 +75,10 @@ public final class ModulithDocusaurusRenderer {
                 .replaceAll("^-+|-+$", "");
     }
 
+    String generateModuleFileName(ApplicationModule module) {
+        return slug(module) + "." + emitter.fileExtension();
+    }
+
     /**
      * Writes one page per module plus an {@code index} page with the overview diagram, into the given directory.
      */
@@ -91,7 +95,7 @@ public final class ModulithDocusaurusRenderer {
             var module = sortedModules.get(i);
             var page = renderModulePage(module, i + 1);
 
-            Files.writeString(directory.resolve(slug(module) + "." + emitter.fileExtension()), page);
+            Files.writeString(directory.resolve(generateModuleFileName(module)), page);
         }
 
         Files.writeString(directory.resolve("index." + emitter.fileExtension()), renderIndexPage());
@@ -117,7 +121,7 @@ public final class ModulithDocusaurusRenderer {
 
         var links = modules.stream()
                 .sorted(Comparator.comparing(ApplicationModule::getDisplayName))
-                .map(module -> "- [%s](./%s)".formatted(module.getDisplayName(), slug(module)))
+                .map(module -> "- [%s](./%s)".formatted(module.getDisplayName(), generateModuleFileName(module)))
                 .collect(Collectors.joining(System.lineSeparator()));
 
         return frontMatter("index", systemName, 0)
